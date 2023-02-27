@@ -4,6 +4,7 @@ class BSTNode:
         self.data = data
         self.left = left
         self.right = right
+        self.nodes = []
 
     def __str__(self):
         return (f"{self.data}")
@@ -88,9 +89,73 @@ class BST:
                             current_node.left = new_node
 
                 add_node(self.root, input_node)
-                self.contents.append(input_node.data)
+            self.contents.append(input_node.data)
         except ValueError as err:
-            print (f"Value Error: {err}")
+            print(f"Value Error: {err}")
+
+    def remove(self, input):
+        try:
+            input_data = None
+
+            # Check input type
+            if type(input) == int:
+                input_data = input
+            elif type(input) == BSTNode:
+                input_data = input.data
+            else:
+                raise ValueError(
+                    f"Arguement value '{input}' is not of type 'Binary Search Tree Node' or 'integer'.")
+
+            if input_data not in self.contents:
+                raise ValueError(
+                    f"Arguement value '{input_data}' is not part if the tree.")
+            else:
+                def remove_node(current_node, remove_value, prev_node=None):
+                    if current_node.data == remove_value:
+                        if current_node.left and current_node.right:  # current_node has 2 children
+                            if prev_node:
+                                if prev_node.right is current_node:
+                                    prev_node.right = None
+                                else:
+                                    prev_node.left = None
+                            else:
+                                self.root = None
+
+                            self.contents.remove(remove_value)
+                            self.nodes = [*self.contents]
+
+                            for node in self.nodes:
+                                self.contents.remove(node)
+                            for node in self.nodes:
+                                self.add(node)
+                        elif current_node.right or current_node.left:  # current_node has 1 child
+                            if current_node.right:
+                                if prev_node.right is current_node:
+                                    prev_node.right = current_node.right
+                                else:
+                                    prev_node.right = current_node.right
+                            else:
+                                if prev_node.left is current_node:
+                                    prev_node.left = current_node.left
+                                else:
+                                    prev_node.left = current_node.left
+                            self.contents.remove(remove_value)
+                        else:  # current_node has 0 children
+                            if prev_node.right is current_node:
+                                prev_node.right == None
+                            else:
+                                prev_node.left = None
+                            self.contents.remove(remove_value)
+                    else:
+                        if remove_value > current_node.data:
+                            remove_node(current_node.right,
+                                        remove_value, current_node)
+                        else:
+                            remove_node(current_node.left,
+                                        remove_value, current_node)
+                remove_node(self.root, input_data)
+        except ValueError as err:
+            print(f"Value Error: {err}")
 
 
 bst = BST()
@@ -124,6 +189,17 @@ bst.add(node4)
 bst.add(node7)
 bst.add(node13)
 
-bst.add(node6)
-
 print(bst)
+print("--------------------------------------------------------")
+
+bst.remove(1)  # leaf/end node
+print(bst)
+print("--------------------------------------------------------")
+
+bst.remove(10)  # middle node
+print(bst)
+print("--------------------------------------------------------")
+
+bst.remove(8)
+print(bst)
+print("--------------------------------------------------------")
